@@ -1,0 +1,70 @@
+units           lj
+dimension       3
+boundary        p p p
+atom_style      bond
+
+# 2. SYSTEM DEFINITION (Creating a 50-bead chain)
+region          box block -30 30 -30 30 -30 30
+create_box      1 box bond/types 1 extra/bond/per/atom 2
+
+# Create a straight chain of 50 atoms in the center of the box
+create_atoms    1 single 0 0 0
+variable        i loop 49
+label           loop_atoms
+variable        x equal $i*0.9
+create_atoms    1 single $x 0 0
+create_bonds    single/bonds 1 $i ${i}+1
+next            i
+jump            SELF loop_atoms
+
+# Set masses
+mass            1 1.0
+
+# 3. FORCE FIELDS (The Physics)
+# Harmonic springs for bonds (k = 100, equilibrium distance = 1.0)
+bond_style      harmonic
+bond_coeff      1 100.0 1.0
+
+# Lennard-Jones for non-bonded interactions
+pair_style      lj/cut 2.5
+
+# *** STUDENT TASK: CHANGE THE THIRD NUMBER ON THE LINE BELOW ***
+# This is epsilon (epsilon = 0.5 is a Coil, epsilon = 2.0 is a Globule)
+pair_coeff      1 1 0.5 1.0
+
+# 4. MINIMIZATION (Relax the initial straight chain)
+minimize        1.0e-4 1.0e-6 100 1000
+reset_timestep  0
+
+# 5. EQUILIBRATION SETTINGS
+velocity        all create 1.0 12345
+fix             1 all nvt temp 1.0 1.0 100.0
+
+# 6. COMPUTES (Measuring the Shape)
+# Calculate Radius of Gyration (Rg)
+compute         myRg all gyration
+# Calculate End-to-End Distance (Re)
+variable        startX equal x[1]
+variable        startY equal y[1]
+variable        startZ equal z[1]
+variable        endX equal x[50]
+variable        endY equal y[50]
+variable        endZ equal z[50]
+variable        myRe equal sqrt((v_endX-v_startX)^2+(v_endY-v_startY)^2+(v_endZ-v_startZ)^2)
+
+
+# 7. OUTPUT
+# Save coordinates for OVITO visualization
+dump            1 all custom 1000 polymer_trajectory.dump id type x y z
+dump_modify     1 sort id
+
+# Print Rg and Re to a text file for the Machine Learning model
+fix             output_data all print 100 "${step} ${myRg} ${myRe}" file shape_data.txt screen no title "Step Rg Re"
+
+# Print basic info to the screen
+thermo          1000
+thermo_style    custom step temp c_myRg v_myRe
+
+# 8. RUN THE SIMULATION
+# Run for 100,000 steps to let the polymer fold into its natural shape
+run             100000
