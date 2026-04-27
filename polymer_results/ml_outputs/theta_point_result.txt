@@ -1,0 +1,3 @@
+Best model: SVM (RBF kernel)
+Theta-point Epsilon: 0.928
+Interpretation: Below e=0.928 = Coil, Above = Globule
