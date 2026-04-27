@@ -1,0 +1,35 @@
+Model: Logistic Regression
+Accuracy: 67.36%
+
+              precision    recall    f1-score    support
+
+Globule         0.66       0.98       0.79        3204
+Coil            0.86       0.18       0.30        2002
+
+accuracy                               0.67        5206
+macro avg       0.76       0.58       0.54        5206
+weighted avg    0.74       0.67       0.60        5206
+============================================================
+
+Model: SVM (RBF kernel)
+Accuracy: 79.35%
+
+              precision    recall    f1-score    support
+
+Globule         0.80       0.89       0.84        3204
+Coil            0.78       0.65       0.71        2002
+
+accuracy                               0.79        5206
+macro avg       0.79       0.77       0.77        5206
+weighted avg    0.79       0.79       0.79        5206
+============================================================
+
+θ-POINT RESULT
+Best model : SVM (RBF kernel)
+θ-point Rg : 8.0746
+(Using mean Re = 4.131 for scan)
+
+★ θ-POINT EPSILON = 0.928
+
+Below ε = 0.928  → Coil state  
+Above ε = 0.928  → Globule state
