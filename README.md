@@ -140,5 +140,8 @@ polymer_ml.py
 ## 👨‍💻 Author
 
 Samyak Kothari
+Smita Singh
+Daksh Vaya
+Bharti Sehra
 
 ---
